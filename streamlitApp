@@ -1,0 +1,32 @@
+import streamlit as st
+
+def verificarCredenciales(usuario, contrasena):
+    # Función simulada para verificar credenciales (prototipo)
+    return usuario == "usuarioDemo" and contrasena == "contrasenaDemo"
+
+# Título e indicaciones de la pantalla de inicio de sesión
+st.title("Inicio de Sesión")
+st.write("Por favor, ingresa tus credenciales para acceder a la aplicación.")
+
+# Campos de ingreso
+usuario = st.text_input("Usuario")
+contrasena = st.text_input("Contraseña", type="password")
+
+# Botón de inicio de sesión
+inicioSesion = st.button("Iniciar Sesión")
+
+# Mensaje de error y lógica de autenticación simulada
+if inicioSesion:
+    if verificarCredenciales(usuario, contrasena):
+        st.success("Inicio de sesión exitoso.")
+        st.write("Bienvenido, ", usuario)
+        # Aquí puedes redirigir a la siguiente parte de la aplicación o dashboard
+    else:
+        st.error("Credenciales inválidas. Por favor, intenta de nuevo.")
+
+# Enlace para recuperar contraseña
+if st.checkbox("¿Olvidaste tu contraseña?"):
+    st.info("Contacta al administrador para recuperar tu contraseña.")
+
+# Indicador de seguridad
+st.write("🔒 Esta es una conexión segura. Protege tus credenciales.")
