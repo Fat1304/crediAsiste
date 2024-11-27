@@ -3,11 +3,13 @@ from datetime import date
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import json
+import os
 
-# Configuración de la API de Google Sheets
 def conectarGoogleSheets():
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    credentials = ServiceAccountCredentials.from_json_keyfile_name("crediasisteCredenciales.json", scope)
+    # Leer las credenciales desde los secretos
+    credentials_json = json.loads(os.getenv("credentials"))  
+    credentials = ServiceAccountCredentials.from_json_keyfile_dict(credentials_json, scope)
     client = gspread.authorize(credentials)
     sheet = client.open("DemoDimi").sheet1  # Cambia al nombre de tu Google Sheets
     return sheet
