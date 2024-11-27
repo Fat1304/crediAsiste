@@ -8,3 +8,4 @@ oauth2client
 gspread
 oauth2client
 google-auth
+pillow==9.3.0
