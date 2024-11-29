@@ -45,7 +45,7 @@ def pantallaResumenAdministrador(df):
     st.metric("Monto Total de la Deuda", f"${monto_total_deuda:,.2f}")
 
     st.header("Lista de Gestores")
-    gestores = df["Gestor"].dropana().unique()
+    gestores = df["Gestor"].dropna().unique()
     for gestor in gestores:
         if st.button(f"Ver {gestor}"):
             st.session_state["clientes"] = df[df["Gestor"] == gestor]
