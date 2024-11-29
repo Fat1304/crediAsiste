@@ -19,7 +19,7 @@ def mostrar_encabezado():
             align-items: center;
         }}
         .header img {{
-            height: 50px;  /* Ajusta el tamaño de la imagen */
+            height: 30px;  /* Ajusta el tamaño de la imagen para que sea más pequeña */
         }}
     </style>
     """, unsafe_allow_html=True)
@@ -39,7 +39,6 @@ def get_base64_image(image_path):
 
 # Llamamos a la función para mostrar el encabezado
 mostrar_encabezado()
-
 
 # Leer datos del CSV en GitHub
 def leerDatos():
