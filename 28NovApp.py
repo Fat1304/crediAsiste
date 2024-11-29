@@ -216,7 +216,6 @@ def pantallaFormularioInteraccion(df):
             # Actualizar el DataFrame
             df.loc[df["Solicitud Id"] == cliente["Solicitud Id"], "Interacciones"] = json.dumps(interacciones)
             st.success("Interacción registrada correctamente.")
-            st.experimental_rerun()
 
     # Botón de regresar
     if st.button("Regresar"):
