@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import json
+import matplotlib.pyplot as plt
 
 # URL del archivo CSV en GitHub
 URL_CSV = "https://raw.githubusercontent.com/Fat1304/crediAsiste/master/dimiDatos.csv"
@@ -43,6 +44,19 @@ def pantallaResumenAdministrador(df):
 
     st.metric("Clientes Gestionados", f"{len(gestionados)} de {total_clientes}", f"{porcentaje:.2f}%")
     st.metric("Monto Total de la Deuda", f"${monto_total_deuda:,.2f}")
+
+    # Gráfico de pastel
+    labels = ['Gestionados', 'No Gestionados']
+    sizes = [len(gestionados), len(no_gestionados)]
+    colors = ['#4CAF50', '#FF6347']  # Verde para gestionados, Rojo para no gestionados
+    explode = (0.1, 0)  # Explode el segmento de "Gestionados"
+
+    fig, ax = plt.subplots()
+    ax.pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1f%%',
+           shadow=True, startangle=140)
+    ax.axis('equal')  # Igualar los ejes para que el pastel sea un círculo
+
+    st.pyplot(fig)
 
     st.header("Lista de Gestores")
     gestores = df["Gestor"].dropna().unique()
