@@ -9,19 +9,13 @@ URL_CSV = "https://raw.githubusercontent.com/Fat1304/crediAsiste/master/dimiDato
 import streamlit as st
 
 def mostrar_encabezado():
-    # Usamos un color verde similar al de la imagen, ajusta este valor si es necesario
-    verde_dimex = "#009933"  # Este es un verde cercano al de la imagen, ajusta si lo deseas
-
     # Usamos CSS para darle estilo al header
-    st.markdown(f"""
+    st.markdown("""
     <style>
         .header {{
-            background-color: {verde_dimex};  /* Verde similar al de la imagen */
             padding: 10px;
-            color: white;
-            font-size: 24px;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;  /* Alinea la imagen a la derecha */
             align-items: center;
         }}
         .header img {{
@@ -33,7 +27,6 @@ def mostrar_encabezado():
     # Encabezado con la imagen a la derecha
     st.markdown("""
     <div class="header">
-        <span>Mi Encabezado Verde</span>
         <img src="data:image/png;base64,{}" alt="Logo">
     </div>
     """.format(get_base64_image("dimexLogo.png")), unsafe_allow_html=True)
