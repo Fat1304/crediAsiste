@@ -131,30 +131,32 @@ def pantallaListaClientes(df):
         st.experimental_rerun()
 
 # Pantalla de información específica del cliente diferenciada por tipo de gestor
+# Pantalla de información específica del cliente diferenciada por tipo de gestor
 def pantallaInformacionCliente(df):
+    # Retrieve selected client
     cliente = st.session_state.get("cliente_seleccionado", None)
-    if cliente is None or cliente.empty:
+    
+    # Fix: Ensure `cliente` is valid and not empty
+    if cliente is None or not isinstance(cliente, pd.Series):
         st.error("No se encontró el cliente seleccionado.")
+        # Redirect to the client list if the client is not found
+        st.session_state["pantalla_actual"] = "lista_clientes"
+        st.experimental_rerun()
         return
 
-    tipo_gestor = st.session_state.get("role", "")
-    gestionado = "Sí" if cliente.get("Gestionado", 0) == 1 else "No"
     st.title(f"Información de {cliente['Nombre']}")
+    gestionado = "Sí" if cliente["Gestionado"] == 1 else "No"
     st.write("Gestionado:", gestionado)
-    st.write("Offer Recommendation:", cliente["Offer Recommendation"])
+    st.write("Offer Recommendation:", cliente.get("Offer Recommendation", "N/A"))
 
-    # Botón de "Regresar"
-    if st.button("Regresar"):
-        # Aquí puedes redirigir a una página de clientes o al dashboard, dependiendo de la estructura de tu aplicación
-        st.session_state.cliente_seleccionado = None  # Limpia la selección actual del cliente
-        st.experimental_rerun()  # Vuelve a cargar la página anterior
+    tipo_gestor = st.session_state.get("role", "").lower()
 
-    # Mostrar los datos según el tipo de gestor
-    if tipo_gestor.lower() == "puerta":
+    # Display information specific to gestor type
+    if tipo_gestor == "puerta":
         st.subheader("Información para Gestor Puerta a Puerta")
         st.write("Nivel Atraso:", cliente.get("Nivel Atraso", "N/A"))
         st.write("Ultima Gestion:", cliente.get("Ultima Gestion", "N/A"))
-    elif tipo_gestor.lower() == "llamada":
+    elif tipo_gestor == "llamada":
         st.subheader("Información para Gestor Call Center")
         st.write("Estado de Cuenta:", cliente.get("Estado Cuenta", "N/A"))
         st.write("Probabilidad de Contención:", cliente.get("Probabilidad Contención", "N/A"))
@@ -163,7 +165,7 @@ def pantallaInformacionCliente(df):
         st.write("Promesas de Pago (Sí):", cliente.get("Promesa Pago Si", "N/A"))
         st.write("Número de Interacciones:", cliente.get("Num Interacciones", "N/A"))
 
-    # Mostrar el historial de interacciones
+    # Display interaction history
     interacciones = json.loads(cliente.get("Interacciones", "[]"))
     interacciones_filtradas = [i for i in interacciones if len(i.keys()) <= 3]
 
@@ -172,80 +174,61 @@ def pantallaInformacionCliente(df):
         st.table(interacciones_filtradas)
     else:
         st.info("No hay interacciones disponibles para mostrar.")
-    
-    # Formulario para ingresar una nueva interacción
-    with st.form(key='form_interaccion'):
-        st.subheader("Registrar nueva interacción")
 
-        # Campos del formulario
-        tipo_gestion = st.selectbox("Tipo de Gestión", ["Call Center", "Gestion Puerta a Puerta"])
-        resultado = st.selectbox("Resultado de la Interacción", ["Atendio un tercero", "No localizado", "Atendio cliente"])
-        promesa = st.selectbox("Promesa de Pago", ["Sí", "No"])
+    # Button to go back to the client list
+    if st.button("Regresar"):
+        st.session_state["pantalla_actual"] = "lista_clientes"
+        st.session_state["cliente_seleccionado"] = None  # Clear selected client
+        st.experimental_rerun()
 
-        # Campos adicionales
-        oferta_cobranza = st.text_input("Oferta de Cobranza")
-        fecha_acordada = st.date_input("Fecha Acordada")
-        fecha_interaccion = st.date_input("Fecha de la Interacción")
-
-        # Botón de envío del formulario
-        submit_button = st.form_submit_button("Registrar Interacción")
-
-        if submit_button:
-            # Registrar la interacción en el cliente
-            nueva_interaccion = {
-                "Tipo_Gestion": tipo_gestion,
-                "Resultado": resultado,
-                "Promesa": promesa,
-                "Oferta_Cobranza": oferta_cobranza,
-                "Fecha_Acordada": fecha_acordada.strftime('%Y-%m-%d'),
-                "Fecha_Interaccion": fecha_interaccion.strftime('%Y-%m-%d')
-            }
-
-            # Actualizar la lista de interacciones
-            interacciones.append(nueva_interaccion)
-            cliente["Interacciones"] = json.dumps(interacciones)  # Convertir a JSON
-
-            # Guardar el cliente con la nueva interacción
-            df.loc[df["Nombre"] == cliente["Nombre"], "Interacciones"] = json.dumps(interacciones)
-            st.success("Interacción registrada exitosamente.")
-            st.experimental_rerun()  # Recargar la página después de registrar la interacción
-
+# Pantalla de formulario para registrar interacción
 # Pantalla de formulario para registrar interacción
 def pantallaFormularioInteraccion(df):
     cliente = st.session_state.get("cliente_seleccionado", None)
-    if not cliente:
+    
+    # Fix: Validate `cliente`
+    if cliente is None or not isinstance(cliente, pd.Series):
         st.error("No se encontró el cliente seleccionado.")
+        # Redirect to client list if the client is invalid
+        st.session_state["pantalla_actual"] = "lista_clientes"
+        st.experimental_rerun()
         return
 
     st.title(f"Registrar Interacción - {cliente['Nombre']}")
 
-    tipo_gestion = st.selectbox("Tipo de Gestión", ["Call Center", "Gestion Puerta a Puerta"])
-    resultado = st.selectbox("Resultado", ["Atendio un tercero", "No localizado", "Atendio cliente"])
-    promesa = st.selectbox("Promesa", ["Si", "No"])
-    oferta = st.selectbox(
-        "Oferta de Cobranza",
-        ["Reestructura del Credito", "Tus Pesos Valen Mas", "Pago sin Beneficio", "Quita / Castigo", "No acordo"]
-    )
-    fecha_acordada = st.date_input("Fecha Acordada", min_value=date.today())
+    # Form to register a new interaction
+    with st.form(key="form_interaccion"):
+        tipo_gestion = st.selectbox("Tipo de Gestión", ["Call Center", "Gestion Puerta a Puerta"])
+        resultado = st.selectbox("Resultado", ["Atendio un tercero", "No localizado", "Atendio cliente"])
+        promesa = st.selectbox("Promesa", ["Si", "No"])
+        oferta = st.text_input("Oferta de Cobranza")
+        fecha_acordada = st.date_input("Fecha Acordada")
+        fecha_interaccion = st.date_input("Fecha de la Interacción")
 
-    if st.button("Guardar"):
-        interaccion = {
-            "Tipo_Gestion": tipo_gestion,
-            "Resultado": resultado,
-            "Promesa_Pago": promesa,
-            "Oferta_Cobranza": oferta,
-            "Fecha_Acordada": fecha_acordada,
-            "Fecha_Interaccion": str(date.today())
-        }
-        interacciones = json.loads(cliente["Interacciones"]) if cliente["Interacciones"] else []
-        interacciones.append(interaccion)
+        if st.form_submit_button("Guardar"):
+            # Add the new interaction
+            nueva_interaccion = {
+                "Tipo_Gestion": tipo_gestion,
+                "Resultado": resultado,
+                "Promesa_Pago": promesa,
+                "Oferta_Cobranza": oferta,
+                "Fecha_Acordada": fecha_acordada.strftime('%Y-%m-%d'),
+                "Fecha_Interaccion": fecha_interaccion.strftime('%Y-%m-%d'),
+            }
 
-        df.loc[df["Solicitud Id"] == cliente["Solicitud Id"], "Interacciones"] = json.dumps(interacciones)
-        st.success("Interacción registrada correctamente.")
+            interacciones = json.loads(cliente["Interacciones"]) if cliente["Interacciones"] else []
+            interacciones.append(nueva_interaccion)
 
+            # Update the DataFrame
+            df.loc[df["Solicitud Id"] == cliente["Solicitud Id"], "Interacciones"] = json.dumps(interacciones)
+            st.success("Interacción registrada correctamente.")
+            st.experimental_rerun()
+
+    # Button to go back
     if st.button("Regresar"):
         st.session_state["pantalla_actual"] = "informacion_cliente"
         st.experimental_rerun()
+
 
 # Main
 def main():
