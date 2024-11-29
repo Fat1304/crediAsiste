@@ -128,26 +128,39 @@ def pantallaInicialGestor(df):
 
 # Pantalla de lista completa de clientes
 # Pantalla de lista completa de clientes
+
 def pantallaListaClientes(df):
     st.title("Lista de Clientes")
+    
     if "clientes" not in st.session_state or st.session_state["clientes"].empty:
         st.error("No hay clientes asignados.")
         return
 
     clientes = st.session_state["clientes"]
+    probabilidad_colores = {"Verde": 0, "Amarillo": 0, "Rojo": 0}  # Contadores para las categorías
+
+    # Recorremos los clientes y asignamos los colores
     for _, cliente in clientes.iterrows():
         prob = cliente["Probabilidad Cuenta Deteriorada"]
         interacciones = cliente["Num Interacciones"]
         promesa_pago_si = cliente["Promesa Pago Si"]
         gestionado = "Sí" if cliente["Gestionado"] == 1 else "No"
 
+        # Cambiar los colores según la probabilidad
         if prob <= 0.30:
             color = "#DFF2BF"  # Verde clarito
+            probabilidad_colores["Verde"] += 1
+            prob_label = "Baja"
         elif prob <= 0.70:
             color = "#FFFFCC"  # Amarillo clarito
+            probabilidad_colores["Amarillo"] += 1
+            prob_label = "Media"
         else:
             color = "#FFBABA"  # Rojo clarito
+            probabilidad_colores["Rojo"] += 1
+            prob_label = "Alta"
 
+        # Mostrar la tarjeta del cliente
         st.markdown(
             f"""
             <div style="
@@ -158,7 +171,7 @@ def pantallaListaClientes(df):
                 box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
             ">
                 <strong>{cliente['Nombre']}</strong><br>
-                Probabilidad de Deterioro: {prob:.2f}<br>
+                Probabilidad de Deterioro: {prob_label} ({prob:.2f})<br>
                 Número de Interacciones: {interacciones}<br>
                 Promesas de Pago (Sí): {promesa_pago_si}<br>
                 Gestionado: {gestionado}
@@ -172,8 +185,21 @@ def pantallaListaClientes(df):
             st.session_state["cliente_seleccionado"] = cliente
             st.session_state["pantalla_actual"] = "informacion_cliente"
 
+    # Gráfico de pastel basado en los colores
+    labels = list(probabilidad_colores.keys())
+    sizes = list(probabilidad_colores.values())
+    colors = ["#DFF2BF", "#FFFFCC", "#FFBABA"]  # Verde, Amarillo, Rojo
+
+    fig, ax = plt.subplots()
+    ax.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90, wedgeprops={'edgecolor': 'black'})
+    ax.axis('equal')  # Para que el gráfico de pastel sea un círculo
+
+    # Mostrar gráfico
+    st.pyplot(fig)
+
     if st.button("Regresar"):
         st.session_state["pantalla_actual"] = "inicio"
+
 
 # Pantalla de información específica del cliente diferenciada por tipo de gestor
 # Pantalla de información específica del cliente diferenciada por tipo de gestor
