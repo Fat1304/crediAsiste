@@ -39,6 +39,7 @@ def pantallaResumenAdministrador(df):
 
     total_clientes = len(df)
     gestionados = df[df["Gestionado"] == 1]
+    no_gestionados = df[df["Gestionado"] == 0]
     porcentaje = (len(gestionados) / total_clientes) * 100
     monto_total_deuda = df["Deuda"].sum()
 
