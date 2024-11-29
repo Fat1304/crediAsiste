@@ -6,6 +6,48 @@ import matplotlib.pyplot as plt
 # URL del archivo CSV en GitHub
 URL_CSV = "https://raw.githubusercontent.com/Fat1304/crediAsiste/master/dimiDatos.csv"
 
+import streamlit as st
+
+def mostrar_encabezado():
+    # Usamos un color verde similar al de la imagen, ajusta este valor si es necesario
+    verde_dimex = "#009933"  # Este es un verde cercano al de la imagen, ajusta si lo deseas
+
+    # Usamos CSS para darle estilo al header
+    st.markdown(f"""
+    <style>
+        .header {{
+            background-color: {verde_dimex};  /* Verde similar al de la imagen */
+            padding: 10px;
+            color: white;
+            font-size: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }}
+        .header img {{
+            height: 50px;  /* Ajusta el tamaño de la imagen */
+        }}
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Encabezado con la imagen a la derecha
+    st.markdown("""
+    <div class="header">
+        <span>Mi Encabezado Verde</span>
+        <img src="data:image/png;base64,{}" alt="Logo">
+    </div>
+    """.format(get_base64_image("dimexLogo.png")), unsafe_allow_html=True)
+
+def get_base64_image(image_path):
+    """Convierte una imagen a base64 para poder usarla en Streamlit."""
+    import base64
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode()
+
+# Llamamos a la función para mostrar el encabezado
+mostrar_encabezado()
+
+
 # Leer datos del CSV en GitHub
 def leerDatos():
     try:
