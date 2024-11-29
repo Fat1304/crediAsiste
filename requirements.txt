@@ -12,12 +12,7 @@ fpdf
 Pillow
 folium
 selenium
-gspread
 oauth2client
 matplotlib
-st-gsheets-connection
-google-auth
-google-auth-oauthlib
-google-auth-httplib2
 python-dotenv  
 webdriver-manager
