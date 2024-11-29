@@ -17,9 +17,10 @@ def mostrar_encabezado():
             display: flex;
             justify-content: flex-end;  /* Alinea la imagen a la derecha */
             align-items: center;
+            width: 100%;  /* Asegura que el contenedor ocupe todo el ancho disponible */
         }}
         .header img {{
-            height: 30px;  /* Ajusta el tamaño de la imagen para que sea más pequeña */
+            height: 20px;  /* Ajusta el tamaño de la imagen aún más pequeño */
         }}
     </style>
     """, unsafe_allow_html=True)
