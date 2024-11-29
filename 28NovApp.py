@@ -195,7 +195,7 @@ def pantallaFormularioInteraccion(df):
         tipo_gestion = st.selectbox("Tipo de Gestión", ["Call Center", "Gestion Puerta a Puerta"])
         resultado = st.selectbox("Resultado", ["Atendio un tercero", "No localizado", "Atendio cliente"])
         promesa = st.selectbox("Promesa", ["Si", "No"])
-        oferta = st.text_input("Oferta de Cobranza")
+        oferta = st.selectbox("Oferta de Cobranza", ["Reestructura del Credito", "Tus Pesos Valen Mas", "Quita / Castigo", "Pago sin Beneficio"])
         fecha_acordada = st.date_input("Fecha Acordada")
         fecha_interaccion = st.date_input("Fecha de la Interacción")
 
