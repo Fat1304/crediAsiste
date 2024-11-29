@@ -82,6 +82,7 @@ def pantallaInicialGestor(df):
         st.experimental_rerun()
 
 # Pantalla de lista completa de clientes
+# Pantalla de lista completa de clientes
 def pantallaListaClientes(df):
     st.title("Lista de Clientes")
     if "clientes" not in st.session_state or st.session_state["clientes"].empty:
@@ -122,6 +123,7 @@ def pantallaListaClientes(df):
         )
 
         if st.button(f"Ver {cliente['Nombre']}", key=f"ver_cliente_{cliente['Solicitud Id']}"):
+            # Guardar el cliente seleccionado en el estado
             st.session_state["cliente_seleccionado"] = cliente
             st.session_state["pantalla_actual"] = "informacion_cliente"
             st.experimental_rerun()
@@ -132,14 +134,13 @@ def pantallaListaClientes(df):
 
 # Pantalla de información específica del cliente diferenciada por tipo de gestor
 # Pantalla de información específica del cliente diferenciada por tipo de gestor
+# Pantalla de información específica del cliente diferenciada por tipo de gestor
 def pantallaInformacionCliente(df):
-    # Retrieve selected client
     cliente = st.session_state.get("cliente_seleccionado", None)
-    
-    # Fix: Ensure `cliente` is valid and not empty
+
+    # Validar cliente seleccionado
     if cliente is None or not isinstance(cliente, pd.Series):
         st.error("No se encontró el cliente seleccionado.")
-        # Redirect to the client list if the client is not found
         st.session_state["pantalla_actual"] = "lista_clientes"
         st.experimental_rerun()
         return
@@ -149,9 +150,8 @@ def pantallaInformacionCliente(df):
     st.write("Gestionado:", gestionado)
     st.write("Offer Recommendation:", cliente.get("Offer Recommendation", "N/A"))
 
+    # Mostrar información específica del gestor
     tipo_gestor = st.session_state.get("role", "").lower()
-
-    # Display information specific to gestor type
     if tipo_gestor == "puerta":
         st.subheader("Información para Gestor Puerta a Puerta")
         st.write("Nivel Atraso:", cliente.get("Nivel Atraso", "N/A"))
@@ -165,38 +165,32 @@ def pantallaInformacionCliente(df):
         st.write("Promesas de Pago (Sí):", cliente.get("Promesa Pago Si", "N/A"))
         st.write("Número de Interacciones:", cliente.get("Num Interacciones", "N/A"))
 
-    # Display interaction history
-    interacciones = json.loads(cliente.get("Interacciones", "[]"))
-    interacciones_filtradas = [i for i in interacciones if len(i.keys()) <= 3]
+    # Botón para registrar interacción
+    if st.button("Registrar Interacción"):
+        st.session_state["pantalla_actual"] = "formulario_interaccion"
+        st.experimental_rerun()
 
-    if interacciones_filtradas:
-        st.subheader("Historial de Interacciones")
-        st.table(interacciones_filtradas)
-    else:
-        st.info("No hay interacciones disponibles para mostrar.")
-
-    # Button to go back to the client list
+    # Botón de regresar
     if st.button("Regresar"):
         st.session_state["pantalla_actual"] = "lista_clientes"
-        st.session_state["cliente_seleccionado"] = None  # Clear selected client
         st.experimental_rerun()
 
 # Pantalla de formulario para registrar interacción
 # Pantalla de formulario para registrar interacción
+# Pantalla de formulario para registrar interacción
 def pantallaFormularioInteraccion(df):
     cliente = st.session_state.get("cliente_seleccionado", None)
-    
-    # Fix: Validate `cliente`
+
+    # Validar el cliente seleccionado
     if cliente is None or not isinstance(cliente, pd.Series):
         st.error("No se encontró el cliente seleccionado.")
-        # Redirect to client list if the client is invalid
         st.session_state["pantalla_actual"] = "lista_clientes"
         st.experimental_rerun()
         return
 
     st.title(f"Registrar Interacción - {cliente['Nombre']}")
 
-    # Form to register a new interaction
+    # Formulario para registrar la interacción
     with st.form(key="form_interaccion"):
         tipo_gestion = st.selectbox("Tipo de Gestión", ["Call Center", "Gestion Puerta a Puerta"])
         resultado = st.selectbox("Resultado", ["Atendio un tercero", "No localizado", "Atendio cliente"])
@@ -206,7 +200,7 @@ def pantallaFormularioInteraccion(df):
         fecha_interaccion = st.date_input("Fecha de la Interacción")
 
         if st.form_submit_button("Guardar"):
-            # Add the new interaction
+            # Añadir la interacción al cliente
             nueva_interaccion = {
                 "Tipo_Gestion": tipo_gestion,
                 "Resultado": resultado,
@@ -219,15 +213,16 @@ def pantallaFormularioInteraccion(df):
             interacciones = json.loads(cliente["Interacciones"]) if cliente["Interacciones"] else []
             interacciones.append(nueva_interaccion)
 
-            # Update the DataFrame
+            # Actualizar el DataFrame
             df.loc[df["Solicitud Id"] == cliente["Solicitud Id"], "Interacciones"] = json.dumps(interacciones)
             st.success("Interacción registrada correctamente.")
             st.experimental_rerun()
 
-    # Button to go back
+    # Botón de regresar
     if st.button("Regresar"):
         st.session_state["pantalla_actual"] = "informacion_cliente"
         st.experimental_rerun()
+
 
 
 # Main
