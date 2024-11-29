@@ -25,12 +25,10 @@ def pantallaInicioSesion(df):
         if username == "admin" and password == "admin":
             st.session_state["role"] = "admin"
             st.session_state["pantalla_actual"] = "resumen_admin"
-            st.experimental_rerun()
         elif username in gestores['Gestor'].values and password == "gestor":
             st.session_state["role"] = username
             st.session_state["clientes"] = df[df['Gestor'] == username]
             st.session_state["pantalla_actual"] = "lista_clientes"
-            st.experimental_rerun()
         else:
             st.error("Credenciales incorrectas")
 
@@ -52,11 +50,9 @@ def pantallaResumenAdministrador(df):
         if st.button(f"Ver {gestor}"):
             st.session_state["clientes"] = df[df["Gestor"] == gestor]
             st.session_state["pantalla_actual"] = "lista_clientes"
-            st.experimental_rerun()
 
     if st.button("Regresar"):
         st.session_state["pantalla_actual"] = "inicio"
-        st.experimental_rerun()
 
 # Pantalla inicial del gestor
 def pantallaInicialGestor(df):
@@ -75,11 +71,9 @@ def pantallaInicialGestor(df):
 
     if st.button("Ver Lista Completa"):
         st.session_state["pantalla_actual"] = "lista_clientes"
-        st.experimental_rerun()
 
     if st.button("Regresar"):
         st.session_state["pantalla_actual"] = "inicio"
-        st.experimental_rerun()
 
 # Pantalla de lista completa de clientes
 # Pantalla de lista completa de clientes
