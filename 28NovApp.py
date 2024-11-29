@@ -121,11 +121,9 @@ def pantallaListaClientes(df):
             # Guardar el cliente seleccionado en el estado
             st.session_state["cliente_seleccionado"] = cliente
             st.session_state["pantalla_actual"] = "informacion_cliente"
-            st.experimental_rerun()
 
     if st.button("Regresar"):
         st.session_state["pantalla_actual"] = "inicio"
-        st.experimental_rerun()
 
 # Pantalla de información específica del cliente diferenciada por tipo de gestor
 # Pantalla de información específica del cliente diferenciada por tipo de gestor
@@ -137,7 +135,6 @@ def pantallaInformacionCliente(df):
     if cliente is None or not isinstance(cliente, pd.Series):
         st.error("No se encontró el cliente seleccionado.")
         st.session_state["pantalla_actual"] = "lista_clientes"
-        st.experimental_rerun()
         return
 
     st.title(f"Información de {cliente['Nombre']}")
@@ -163,12 +160,10 @@ def pantallaInformacionCliente(df):
     # Botón para registrar interacción
     if st.button("Registrar Interacción"):
         st.session_state["pantalla_actual"] = "formulario_interaccion"
-        st.experimental_rerun()
 
     # Botón de regresar
     if st.button("Regresar"):
         st.session_state["pantalla_actual"] = "lista_clientes"
-        st.experimental_rerun()
 
 # Pantalla de formulario para registrar interacción
 # Pantalla de formulario para registrar interacción
@@ -180,7 +175,6 @@ def pantallaFormularioInteraccion(df):
     if cliente is None or not isinstance(cliente, pd.Series):
         st.error("No se encontró el cliente seleccionado.")
         st.session_state["pantalla_actual"] = "lista_clientes"
-        st.experimental_rerun()
         return
 
     st.title(f"Registrar Interacción - {cliente['Nombre']}")
@@ -215,7 +209,6 @@ def pantallaFormularioInteraccion(df):
     # Botón de regresar
     if st.button("Regresar"):
         st.session_state["pantalla_actual"] = "informacion_cliente"
-        st.experimental_rerun()
 
 
 
